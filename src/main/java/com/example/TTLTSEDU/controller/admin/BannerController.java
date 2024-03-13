@@ -1,51 +1,45 @@
 package com.example.TTLTSEDU.controller.admin;
 
-import com.example.TTLTSEDU.request.ScheduleRequest;
-import com.example.TTLTSEDU.service.ScheduleService;
-import jakarta.validation.Valid;
+import com.example.TTLTSEDU.request.BannerRequest;
+import com.example.TTLTSEDU.service.BannerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.ParseException;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/auth/schedule")
-public class ScheduleController {
+@RequestMapping("/auth/banner")
+public class BannerController {
 
     @Autowired
-    private ScheduleService scheduleService;
+    private BannerService bannerService;
 
     @GetMapping("/all")
     public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok(scheduleService.getAll());
+        return ResponseEntity.ok(bannerService.getAll());
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<?> add(@RequestBody @Valid ScheduleRequest scheduleRequest, BindingResult bindingResult) throws ParseException {
+    @RequestMapping(value = "/add", method = RequestMethod.POST, consumes = {"multipart/form-data"})
+    public ResponseEntity<?> add(@ModelAttribute BannerRequest bannerRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             String error = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
             return ResponseEntity.ok(error);
         } else {
-            if (scheduleService.add(scheduleRequest)) {
-                return ResponseEntity.ok("Added data successfully");
-            } else {
-                return ResponseEntity.ok("Another movie was shown around this time");
-            }
+            bannerService.add(bannerRequest);
+            return ResponseEntity.ok("Added data successfully");
         }
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@RequestBody @Valid ScheduleRequest scheduleRequest, BindingResult bindingResult,
-                                    @PathVariable Integer id) throws ParseException {
+    @RequestMapping(value = "/update/{id}", method = RequestMethod.PUT, consumes = {"multipart/form-data"})
+    public ResponseEntity<?> update(@PathVariable Integer id, @ModelAttribute BannerRequest bannerRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             String error = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
             return ResponseEntity.ok(error);
         } else {
-            if (scheduleService.update(scheduleRequest, id)) {
-                return ResponseEntity.ok("Successfully edited data");
+            if (bannerService.update(bannerRequest, id)) {
+                return ResponseEntity.ok("Added data successfully");
             } else {
                 return ResponseEntity.ok("Data does not exist");
             }
@@ -54,7 +48,7 @@ public class ScheduleController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
-        if (scheduleService.delete(id)) {
+        if (bannerService.delete(id)) {
             return ResponseEntity.ok("Deleted data successfully");
         } else {
             return ResponseEntity.ok("Data does not exist");

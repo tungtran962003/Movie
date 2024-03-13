@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/api/cinema")
+@RequestMapping("/auth/cinema")
 public class CinemaController {
 
     @Autowired
@@ -20,7 +20,7 @@ public class CinemaController {
 
 
     @GetMapping("/all")
-    @PreAuthorize("hasRole('Admin')")
+//    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(cinemaService.getAll());
     }

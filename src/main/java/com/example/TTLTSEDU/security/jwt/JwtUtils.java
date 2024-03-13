@@ -54,7 +54,8 @@ public class JwtUtils {
 
     private Key getKey() {
         // Tạo 1 khóa HMA-SHA từ 1 đoạn mã token đã được giải mã dưới định dạng BASE64
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+        Key key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+        return key;
     }
 
     // Kiểm tra token có hợp lệ hay không
@@ -78,5 +79,9 @@ public class JwtUtils {
 
     public String getUsernameFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(getKey()).build().parseClaimsJwt(token).getBody().getSubject();
+    }
+
+    public String getUserNameFromJwtToken(String token) {
+        return Jwts.parserBuilder().setSigningKey(getKey()).build().parseClaimsJws(token).getBody().getSubject();
     }
 }

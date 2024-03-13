@@ -10,7 +10,7 @@ public interface ScheduleService {
 
     List<Schedule> getAll();
 
-    void add(ScheduleRequest scheduleRequest) throws ParseException;
+    Boolean add(ScheduleRequest scheduleRequest) throws ParseException;
 
     Boolean update(ScheduleRequest scheduleRequest, Integer id) throws ParseException;
 

@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -27,16 +30,38 @@ public class ScheduleServiceImpl implements ScheduleService {
         return "S" + code;
     }
 
+    public Boolean checkTime(Date startAt, Date endAt, Integer movieId, Integer roomId) {
+        List<Schedule> listSchedule = scheduleRepository.checkTimeSchedule(startAt, endAt, movieId, roomId);
+        if (listSchedule == null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+//    public Date generateEndAt(Date startAt, Integer movieDuration) {
+//        Integer seconds = movieDuration * 60;
+//        LocalTime localTime = LocalTime.ofSecondOfDay(seconds);
+//    }
+
     @Override
     public List<Schedule> getAll() {
         return scheduleRepository.findAll();
     }
 
     @Override
-    public void add(ScheduleRequest scheduleRequest) throws ParseException {
-        Schedule schedule = scheduleRequest.add(new Schedule());
-        schedule.setCode(generateCode());
-        scheduleRepository.save(schedule);
+    public Boolean add(ScheduleRequest scheduleRequest) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date startAt = sdf.parse(scheduleRequest.getStartAt());
+        Date endAt = sdf.parse(scheduleRequest.getEndAt());
+        if (checkTime(startAt, endAt, scheduleRequest.getMovieId(), scheduleRequest.getRoomId())) {
+            Schedule schedule = scheduleRequest.add(new Schedule());
+            schedule.setCode(generateCode());
+            scheduleRepository.save(schedule);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override

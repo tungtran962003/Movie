@@ -9,4 +9,6 @@ public interface UsersService {
     List<Users> getAll();
 
     Users getOne(Integer id);
+
+    Users getUserByEmail(String email);
 }

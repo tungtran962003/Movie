@@ -62,4 +62,9 @@ public class MovieServiceImpl implements MovieService {
     public List<MovieFilterDto> filterMovieResponse(String movieName) {
         return movieRepository.filterMovieResponse(movieName);
     }
+
+    @Override
+    public Movie getOne(Integer id) {
+        return null;
+    }
 }

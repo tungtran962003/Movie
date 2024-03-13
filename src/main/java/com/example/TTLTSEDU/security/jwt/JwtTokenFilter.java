@@ -30,7 +30,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         try {
             String token = parseJwt(request);
             if (token != null && jwtUtils.validateToken(token)) { // Kiểm tra xem token có tồn tại không
-                String username = jwtUtils.getUsernameFromToken(token); // Lấy username trong token
+                String username = jwtUtils.getUserNameFromJwtToken(token); // Lấy username trong token
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username); // Gán user trong entity vào user hệ thông
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()

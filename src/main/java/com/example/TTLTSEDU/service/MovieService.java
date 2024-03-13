@@ -21,4 +21,6 @@ public interface MovieService {
     Boolean delete(Integer id);
 
     List<MovieFilterDto> filterMovieResponse(String movieName);
+
+    Movie getOne(Integer id);
 }

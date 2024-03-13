@@ -22,6 +22,8 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
@@ -63,16 +65,37 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtEntryPoint))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/cinema/**").permitAll()
-                        .anyRequest().authenticated());
+//        http.csrf(csrf -> csrf.disable())
+//                .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtEntryPoint))
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**").permitAll()
+//                        .requestMatchers("/api/cinema/**").permitAll()
+//                        .anyRequest().authenticated());
+//
+//        http.authenticationProvider(authenticationProvider());
+//
+//        http.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
-        http.authenticationProvider(authenticationProvider());
+//        http.formLogin(form -> form.loginPage("/login").defaultSuccessUrl("/home").loginProcessingUrl("/login").permitAll()).logout(logout -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).permitAll());
 
-        http.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(req -> {
+            //Allowing Resources
+//            req.requestMatchers("/*.css", "/*.js", "/assets/**", "/admin/**", "/user/**").permitAll();
+
+            //Testing purpose
+            req.requestMatchers("/signup", "/signin", "/confirmEmail", "/vnpay/return").permitAll();
+
+            //Role base authority
+            req.requestMatchers("/auth/resetPassword").hasAnyAuthority("Admin", "Staff", "User")
+                    .requestMatchers("/auth/**").hasAnyAuthority("Admin", "Staff")
+                    .anyRequest().permitAll();
+        })
+                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+//
+//        http.logout(logout -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).permitAll());
+        http.exceptionHandling(ex -> ex.accessDeniedHandler(accessDeniedHandler()));
 
         return http.build();
     }

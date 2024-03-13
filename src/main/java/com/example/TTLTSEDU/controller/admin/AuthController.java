@@ -28,10 +28,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping()
 public class AuthController {
 
     @Autowired
@@ -51,7 +53,6 @@ public class AuthController {
 
     @Autowired
     private JwtUtils jwtUtils;
-
 
 
     @PostMapping("/signup")
@@ -98,6 +99,10 @@ public class AuthController {
         } catch (AuthenticationException e) {
             return ResponseEntity.ok(new MessageResponse("Username or password is incorrect"));
         }
+
+//        Authentication authentication = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(signinRequest.getUsername(), signinRequest.getPassword())
+//        );
         Users users = usersRepository.findByUsername(signinRequest.getUsername()).orElse(null);
         if (users.getUserStatus().getId() == 2) {
             return ResponseEntity.ok(new MessageResponse("Account has not been activated"));
@@ -105,9 +110,10 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.genarateJwtToken(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        String roleName = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toString();
+//        String roleName = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toString();
+        List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
         return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(),
-                roleName, "Xin chào " + userDetails.getName()));
+                roles, "Xin chào " + userDetails.getName()));
     }
 
     @PostMapping("/sendCodeEmail")

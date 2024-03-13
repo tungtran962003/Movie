@@ -32,11 +32,14 @@ public class ScheduleRequest {
     private Integer roomId;
 
     public Schedule add(Schedule schedule) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         schedule.setName(this.name);
-        schedule.setStartAt(new Date(String.valueOf(sdf.parse(this.startAt))));
-        schedule.setEndAt(new Date(String.valueOf(sdf.parse(this.endAt))));
+        Date startDate = sdf.parse(this.getStartAt());
+        Date endDate = sdf.parse(this.getEndAt());
+        schedule.setStartAt(startDate);
+        schedule.setEndAt(endDate);
         schedule.setIsActive(true);
+        schedule.setPrice(this.getPrice());
         schedule.setRoom(Room.builder().id(this.roomId).build());
         schedule.setMovie(Movie.builder().id(this.movieId).build());
         return schedule;
@@ -51,6 +54,7 @@ public class ScheduleRequest {
         schedule.setStartAt(new Date(String.valueOf(sdf.parse(scheduleRequest.getStartAt()))));
         schedule.setEndAt(new Date(String.valueOf(sdf.parse(scheduleRequest.getEndAt()))));
         schedule.setIsActive(true);
+        schedule.setPrice(scheduleRequest.getPrice());
         schedule.setRoom(Room.builder().id(scheduleRequest.getRoomId()).build());
         schedule.setMovie(Movie.builder().id(scheduleRequest.getMovieId()).build());
         return schedule;
