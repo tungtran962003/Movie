@@ -1,7 +1,7 @@
 package com.example.TTLTSEDU.controller.admin;
 
-import com.example.TTLTSEDU.request.UsersRequest;
-import com.example.TTLTSEDU.service.UsersService;
+import com.example.TTLTSEDU.request.TicketRaquest;
+import com.example.TTLTSEDU.service.TicketService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,41 +11,36 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/auth/users")
-public class UsersController {
+@RequestMapping("/auth/ticket")
+public class TicketController {
 
     @Autowired
-    private UsersService usersService;
+    private TicketService ticketService;
 
     @GetMapping("/all")
     public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok(usersService.getAll());
+        return ResponseEntity.ok(ticketService.getAll());
     }
 
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<?> getOne(@PathVariable Integer id) {
-        return ResponseEntity.ok(usersService.getOne(id));
-    }
 
     @PostMapping("/add")
-    public ResponseEntity<?> add(@RequestBody @Valid UsersRequest usersRequest, BindingResult bindingResult) {
+    public ResponseEntity<?> add(@RequestBody @Valid TicketRaquest ticketRaquest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             String error = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
             return ResponseEntity.ok(error);
         } else {
-            usersService.add(usersRequest);
+            ticketService.add(ticketRaquest);
             return ResponseEntity.ok("Added data successfully");
         }
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@RequestBody UsersRequest usersRequest, BindingResult bindingResult,
-                                    @PathVariable Integer id) {
+    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody @Valid TicketRaquest ticketRaquest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             String error = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
             return ResponseEntity.ok(error);
         } else {
-            if (usersService.update(usersRequest, id)) {
+            if (ticketService.update(ticketRaquest, id)) {
                 return ResponseEntity.ok("Successfully edited data");
             } else {
                 return ResponseEntity.ok("Data does not exist");
@@ -55,7 +50,7 @@ public class UsersController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
-        if (usersService.delete(id)) {
+        if (ticketService.delete(id)) {
             return ResponseEntity.ok("Deleted data successfully");
         } else {
             return ResponseEntity.ok("Data does not exist");

@@ -31,8 +31,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     public Boolean checkTime(Date startAt, Date endAt, Integer movieId, Integer roomId) {
-        List<Schedule> listSchedule = scheduleRepository.checkTimeSchedule(startAt, endAt, movieId, roomId);
-        if (listSchedule == null) {
+        List<Schedule> listSchedule = scheduleRepository.checkTimeSchedule(startAt, endAt, roomId);
+        if (listSchedule.size() == 0) {
             return true;
         } else {
             return false;

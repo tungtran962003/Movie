@@ -44,7 +44,7 @@ public class BannerServiceImpl implements BannerService {
             String newFileName = "banner_" + new Date().getTime();
             String bannerPath = FileUtil.copyFile(bannerRequest.getImageUrl(), fileName, uploadDir);
             String imageUrl = FileUtil.rename(bannerPath, newFileName);
-            banner = bannerRequest.update(banner, id);
+            banner = bannerRequest.update(bannerRequest, id);
             banner.setImageUrl(imageUrl);
             bannerRepository.save(banner);
             return true;

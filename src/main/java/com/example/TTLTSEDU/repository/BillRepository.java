@@ -1,5 +1,6 @@
 package com.example.TTLTSEDU.repository;
 
+import com.example.TTLTSEDU.dto.TotalRevenueDto;
 import com.example.TTLTSEDU.entity.Bill;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,4 +17,5 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
             "WHERE b.customerId =:customerId AND b.billStatus.id = 2 AND b.isActive = true " +
             "ORDER BY b.id DESC")
     List<Bill> findTopByCustomerIdAAndBillStatusOrderByIdDesc(Integer customerId);
+
 }

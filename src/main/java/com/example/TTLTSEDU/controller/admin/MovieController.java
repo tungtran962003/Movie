@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,8 +24,8 @@ public class MovieController {
         return ResponseEntity.ok(movieService.getAll());
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<?> add(@RequestBody @Valid MovieRequest movieRequest, BindingResult bindingResult) {
+    @PostMapping(value = "/add", consumes = {"multipart/form-data"})
+    public ResponseEntity<?> add(@ModelAttribute MovieRequest movieRequest, BindingResult bindingResult) throws ParseException {
         if (bindingResult.hasErrors()) {
             String error = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
             return ResponseEntity.ok(error);
@@ -35,7 +36,7 @@ public class MovieController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody @Valid MovieRequest movieRequest, BindingResult bindingResult) {
+    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody @Valid MovieRequest movieRequest, BindingResult bindingResult) throws ParseException {
         if (bindingResult.hasErrors()) {
             String error = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
             return ResponseEntity.ok(error);

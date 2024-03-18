@@ -36,6 +36,12 @@ public class BillServiceImpl implements BillService {
     @Autowired
     private PromotionRepository promotionRepository;
 
+    @Autowired
+    private TicketRepository ticketRepository;
+
+    @Autowired
+    private BillTicketRepository billTicketRepository;
+
     public String generateCode() {
         Bill billFinalPresent = billRepository.findTopByOrderByIdDesc();
         if (billFinalPresent == null) {
@@ -47,16 +53,18 @@ public class BillServiceImpl implements BillService {
     }
 
     public Double calculatePriceToPriceDiscount(Double price, Integer value) {
-        Double discount = (double) (value / 100);
-        return price - (price * discount);
+        Double discount = price * value / 100.0;
+        Double priceFinal = price - discount;
+        return priceFinal;
     }
 
     @Override
-    public String checkOut(String movieName, Integer cinemaId, Integer roomId, Integer scheduleId, Integer foodId, Integer foodQuantity, Integer promotionId, UserDetailsImpl userDetails, HttpSession httpSession) {
+    public String checkOut(String movieName, Integer cinemaId, Integer roomId, Integer scheduleId, Integer foodId, Integer foodQuantity, Integer ticketId, Integer ticketQuantity, Integer promotionId, UserDetailsImpl userDetails, HttpSession httpSession) {
         Food food = foodRepository.findById(foodId).orElse(null);
         Cinema cinema = cinemaRepository.findById(cinemaId).orElse(null);
         Schedule schedule = scheduleRepository.findById(scheduleId).orElse(null);
         Room room = roomRepository.findById(roomId).orElse(null);
+        Ticket ticket = ticketRepository.findById(ticketId).orElse(null);
         if (promotionId != null) {
             Promotion promotion = promotionRepository.findById(promotionId).orElse(null);
             if (promotion == null) {
@@ -69,17 +77,22 @@ public class BillServiceImpl implements BillService {
                 return "This promotion has ended";
             }
         }
-        Double totalMoney = food.getPrice() * foodQuantity + schedule.getPrice();
-        Bill bill = createBill(movieName, promotionId, userDetails, totalMoney, cinema, room, schedule, food, httpSession);
+        Double totalMoney = (food.getPrice() * foodQuantity) + (ticket.getPriceTicket() * ticketQuantity) + schedule.getPrice();
+        Bill bill = createBill(movieName, promotionId, userDetails, totalMoney, cinema, room, schedule, food, ticket, httpSession);
         BillFood billFood = new BillFood();
         billFood.setBill(bill);
         billFood.setFood(food);
         billFood.setQuantity(foodQuantity);
         billFoodRepository.save(billFood);
+        BillTicket billTicket = new BillTicket();
+        billTicket.setBill(bill);
+        billTicket.setTicket(ticket);
+        billTicket.setQuantity(ticketQuantity);
+        billTicketRepository.save(billTicket);
         return "Invoice created successfully";
     }
 
-    public Bill createBill(String movieName, Integer promotionId, UserDetailsImpl userDetails, Double totalMoney, Cinema cinema, Room room, Schedule schedule, Food food, HttpSession httpSession) {
+    public Bill createBill(String movieName, Integer promotionId, UserDetailsImpl userDetails, Double totalMoney, Cinema cinema, Room room, Schedule schedule, Food food, Ticket ticket, HttpSession httpSession) {
         Bill bill = new Bill();
         bill.setTradingCode(generateCode());
         bill.setIsActive(true);
@@ -94,11 +107,14 @@ public class BillServiceImpl implements BillService {
             Promotion promotion = promotionRepository.findById(promotionId).orElse(null);
             bill.setPromotion(Promotion.builder().id(promotionId).build());
             bill.setTotalMoney(calculatePriceToPriceDiscount(totalMoney, promotion.getPercents()));
+            promotion.setQuantity(promotion.getQuantity() - 1);
+            promotionRepository.save(promotion);
         }
         httpSession.setAttribute("movieName", movieName);
         httpSession.setAttribute("cinemaName", cinema.getNameOfCinema());
         httpSession.setAttribute("roomName", room.getName());
         httpSession.setAttribute("scheduleName", schedule.getName());
+        httpSession.setAttribute("foodName", food.getNameOfFood());
         httpSession.setAttribute("foodName", food.getNameOfFood());
         bill.setCustomerId(userDetails.getId());
         return billRepository.save(bill);

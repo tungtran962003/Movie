@@ -48,19 +48,19 @@ public class BillController {
                                         @RequestParam Integer scheduleId,
                                         @RequestParam Integer foodId,
                                         @RequestParam Integer foodQuantity,
+                                        @RequestParam Integer ticketId,
+                                        @RequestParam Integer ticketQuantity,
                                         @RequestParam(required = false) Integer promotionId,
                                         HttpSession httpSession) {
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String result = billService.checkOut(movieName, cinemaId, roomId, scheduleId, foodId, foodQuantity, promotionId, userDetails, httpSession);
+        String result = billService.checkOut(movieName, cinemaId, roomId, scheduleId, foodId, foodQuantity, ticketId, ticketQuantity, promotionId, userDetails, httpSession);
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("/vnpay/return")
     public ResponseEntity<?> payment(VNPayResponse vnPayResponse, HttpSession httpSession) {
-//        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (vnPayResponse.getVnp_ResponseCode().equals("00")) {
             String email = jsonObject.get("email").toString().replace("\"", "").replace("[", "").replace("]", "");
-//            String email = "tungttph27337@fpt.edu.vn";
             Users users = usersService.getUserByEmail(email);
             Bill bill = billService.getBillByCustomer(users.getId());
             String result = paymentService.payment(bill, users, httpSession);

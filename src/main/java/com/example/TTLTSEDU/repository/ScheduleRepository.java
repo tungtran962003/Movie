@@ -16,7 +16,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
     @Query(value = "SELECT s FROM Schedule s " +
             "INNER JOIN Movie m ON m.id = s.movie.id " +
             "INNER JOIN Room r ON r.id = s.room.id " +
-            "WHERE m.id =:movieId AND r.id =:roomId " +
-            "AND s.startAt >= :startAt AND s.endAt <= :endAt")
-    List<Schedule> checkTimeSchedule(Date startAt, Date endAt, Integer movieId, Integer roomId);
+            "WHERE r.id =:roomId " +
+            "AND (s.startAt >= :startAt AND s.endAt <= :endAt) " +
+            "OR (s.startAt <= :startAt AND s.endAt >= :startAt)")
+    List<Schedule> checkTimeSchedule(Date startAt, Date endAt, Integer roomId);
 }

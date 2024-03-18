@@ -22,10 +22,10 @@ public class BannerRequest {
         return banner;
     }
 
-    public Banner update(Banner banner, Integer id) {
+    public Banner update(BannerRequest bannerRequest, Integer id) {
+        Banner banner = new Banner();
         banner.setId(id);
-        banner.setImageUrl(banner.getImageUrl());
-        banner.setTitle(banner.getTitle());
+        banner.setTitle(bannerRequest.getTitle());
         return banner;
     }
 }

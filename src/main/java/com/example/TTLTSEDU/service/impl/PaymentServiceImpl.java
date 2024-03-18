@@ -141,17 +141,17 @@ public class PaymentServiceImpl implements PaymentService {
         String body =
                 "Hi " + users.getName() + ",\n\n" +
                         "You have successfully paid " + bill.getName() +
-                        " Movie name: " + httpSession.getAttribute("movieName").toString() + ".\n" +
-                        " Cinema name: " + httpSession.getAttribute("cinemaName").toString() + ".\n" +
-                        " Room name: " + httpSession.getAttribute("roomName").toString() + ".\n" +
-                        " Schedule name: " + httpSession.getAttribute("scheduleName").toString() + ".\n" +
+//                        " Movie name: " + httpSession.getAttribute("movieName").toString() + ".\n" +
+//                        " Cinema name: " + httpSession.getAttribute("cinemaName").toString() + ".\n" +
+//                        " Room name: " + httpSession.getAttribute("roomName").toString() + ".\n" +
+//                        " Schedule name: " + httpSession.getAttribute("scheduleName").toString() + ".\n" +
                         " with the money of " + bill.getTotalMoney() + ".\n\n" +
                         "Thank you.\n\n";
         mailUtil.sendEmail(users.getEmail(), "Your invoice", body);
-        httpSession.removeAttribute("movieName");
-        httpSession.removeAttribute("cinemaName");
-        httpSession.removeAttribute("roomName");
-        httpSession.removeAttribute("scheduleName");
+//        httpSession.removeAttribute("movieName");
+//        httpSession.removeAttribute("cinemaName");
+//        httpSession.removeAttribute("roomName");
+//        httpSession.removeAttribute("scheduleName");
         return "Payment success";
     }
 }

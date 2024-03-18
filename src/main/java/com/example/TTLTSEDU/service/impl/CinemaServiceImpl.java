@@ -1,5 +1,6 @@
 package com.example.TTLTSEDU.service.impl;
 
+import com.example.TTLTSEDU.dto.TotalRevenueDto;
 import com.example.TTLTSEDU.entity.Cinema;
 import com.example.TTLTSEDU.repository.CinemaRepository;
 import com.example.TTLTSEDU.request.CinemaRequest;
@@ -7,6 +8,9 @@ import com.example.TTLTSEDU.service.CinemaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -60,5 +64,28 @@ public class CinemaServiceImpl implements CinemaService {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public Boolean checkDate(String startDate, String endDate) {
+        String regex = "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        if (!startDate.matches(regex) || !endDate.matches(regex)) {
+            return false;
+        } else {
+            try {
+                Date startDateStr = sdf.parse(startDate);
+                Date endDateStr = sdf.parse(endDate);
+            } catch (Exception e) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public List<TotalRevenueDto> getTotalMoneyByCinema(String startDate, String endDate) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return cinemaRepository.getTotalMoneyByCinema(sdf.parse(startDate), sdf.parse(endDate));
     }
 }
